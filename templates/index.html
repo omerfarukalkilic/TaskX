@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yapılacaklar Listesi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+        }
+
+        /* Sidebar stilleri */
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            padding-top: 20px;
+            padding-left: 15px;
+            padding-right: 15px;
+            color: white;
+            min-height: 100vh;
+        }
+        .sidebar .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #495057;
+        }
+        .sidebar a {
+            display: block;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .task-section {
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        .task-section h3 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ced4da;
+            color: #495057;
+        }
+        .task-section h3:after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background-color: #0d6efd;
+            margin-top: 10px;
+        }
+        .open-tasks {
+            border-left: 5px solid #0d6efd;
+        }
+        .ongoing-tasks {
+            border-left: 5px solid #0dcaf0;
+        }
+        .pending-tasks {
+            border-left: 5px solid #ffc107;
+        }
+        .completed-tasks {
+            border-left: 5px solid #198754;
+        }
+        .profile {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .profile img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .profile .username {
+            margin-right: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .profile .dropdown-menu {
+            right: 0;
+            left: auto;
+        }
+        .task-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .task-header {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        .task-priority {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        .task-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .task-actions a {
+            flex-grow: 1;
+            text-align: center;
+        }
+        .task-details {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+    </style>
+  </head>
+  <body>
+      <div class="sidebar">
+          <div class="sidebar-header">Menü</div>
+          <a href="{{ url_for('index') }}">Görevler</a>
+          <a href="{{ url_for('dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('profile') }}">Profilim</a>
+          <a href="{{ url_for('logout') }}">Çıkış Yap</a>
+      </div>
+
+      <div class="content container">
+          {% if session.get('user_id') %}
+              <div class="dropdown profile">
+                  <img src="{{ url_for('static', filename='images/' + session.get('avatar', 'default_avatar.png')) }}" alt="Avatar" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <span class="username" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                      {{ session.get('first_name', 'Kullanıcı') }} {{ session.get('last_name', '') }}
+                  </span>
+                  <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                      <li><a class="dropdown-item" href="#">Ad: {{ session.get('first_name', '') }} {{ session.get('last_name', '') }}</a></li>
+                      <li><a class="dropdown-item" href="#">E-posta: {{ session.get('email') }}</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="{{ url_for('profile') }}">Profili Düzenle</a></li>
+                      <li><a class="dropdown-item" href="{{ url_for('logout') }}">Çıkış Yap</a></li>
+                  </ul>
+              </div>
+          {% endif %}
+
+        <h1 class="my-4 text-center">Yapılacaklar Listesi</h1>
+
+        {% if session.get('user_id') %}
+            <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+                Yeni Görev Ekle
+            </button>
+
+            <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addTaskModalLabel">Yeni Görev Ekle</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{ url_for('add') }}" method="POST">
+                                <div class="mb-3">
+                                    <label for="task" class="form-label">Görev</label>
+                                    <input type="text" class="form-control" id="task" name="task" placeholder="Yeni bir görev girin" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Açıklama</label>
+                                    <textarea class="form-control" id="description" name="description" rows="3" placeholder="Görev açıklaması ekleyin"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="due_date" class="form-label">Son Tarih</label>
+                                    <input type="date" class="form-control" id="due_date" name="due_date">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="priority" class="form-label">Öncelik</label>
+                                    <select name="priority" id="priority" class="form-select" required>
+                                        <option value="High">Yüksek</option>
+                                        <option value="Medium">Orta</option>
+                                        <option value="Low">Düşük</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Görevi Ekle</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="task-section open-tasks">
+                        <h3>Açık Görevler</h3>
+                        {% for task in tasks if task.status == 'Open' %}
+                            <div class="task-card">
+                                <div class="task-header">{{ task.task }} - <span class="task-priority">{{ task.priority }}</span></div>
+                                <div class="task-details">
+                                    <div>Açıklama: {{ task.description or 'Yok' }}</div>
+                                    <div>Son Tarih: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'Belirlenmemiş' }}</div>
+                                </div>
+                                <div class="task-actions">
+                                    <a href="{{ url_for('change_status', task_id=task.id, new_status='Ongoing') }}" class="btn btn-info btn-sm">Başlat</a>
+                                    <a href="{{ url_for('change_status', task_id=task.id, new_status='Pending') }}" class="btn btn-warning btn-sm">Beklet</a>
+                                    <a href="{{ url_for('delete', task_id=task.id) }}" class="btn btn-danger btn-sm">Sil</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="task-section ongoing-tasks">
+                        <h3>Devam Eden Görevler</h3>
+                        {% for task in tasks if task.status == 'Ongoing' %}
+                            <div class="task-card">
+                                <div class="task-header">{{ task.task }} - <span class="task-priority">{{ task.priority }}</span></div>
+                                <div class="task-details">
+                                    <div>Açıklama: {{ task.description or 'Yok' }}</div>
+                                    <div>Son Tarih: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'Belirlenmemiş' }}</div>
+                                </div>
+                                <div class="task-actions">
+                                    <a href="{{ url_for('change_status', task_id=task.id, new_status='Pending') }}" class="btn btn-warning btn-sm">Beklet</a>
+                                    <a href="{{ url_for('change_status', task_id=task.id, new_status='Completed') }}" class="btn btn-success btn-sm">Tamamla</a>
+                                    <a href="{{ url_for('delete', task_id=task.id) }}" class="btn btn-danger btn-sm">Sil</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="task-section pending-tasks">
+                        <h3>Bekleyen Görevler</h3>
+                        {% for task in tasks if task.status == 'Pending' %}
+                            <div class="task-card">
+                                <div class="task-header">{{ task.task }} - <span class="task-priority">{{ task.priority }}</span></div>
+                                <div class="task-details">
+                                    <div>Açıklama: {{ task.description or 'Yok' }}</div>
+                                    <div>Son Tarih: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'Belirlenmemiş' }}</div>
+                                </div>
+                                <div class="task-actions">
+                                    <a href="{{ url_for('change_status', task_id=task.id, new_status='Ongoing') }}" class="btn btn-info btn-sm">Devam Et</a>
+                                    <a href="{{ url_for('change_status', task_id=task.id, new_status='Completed') }}" class="btn btn-success btn-sm">Tamamla</a>
+                                    <a href="{{ url_for('delete', task_id=task.id) }}" class="btn btn-danger btn-sm">Sil</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="task-section completed-tasks">
+                        <h3>Tamamlanmış Görevler</h3>
+                        {% for task in tasks if task.status == 'Completed' %}
+                            <div class="task-card">
+                                <div class="task-header">{{ task.task }} - <span class="task-priority">{{ task.priority }}</span></div>
+                                <div class="task-details">
+                                    <div>Açıklama: {{ task.description or 'Yok' }}</div>
+                                    <div>Son Tarih: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'Belirlenmemiş' }}</div>
+                                </div>
+                                <div class="task-actions">
+                                    <a href="{{ url_for('delete', task_id=task.id) }}" class="btn btn-danger btn-sm">Sil</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                Lütfen <a href="{{ url_for('login') }}" class="alert-link">Giriş Yapın</a> veya <a href="{{ url_for('register') }}" class="alert-link">Kayıt Olun</a> ve görevlerinizi yönetin.
+            </div>
+        {% endif %}
+        <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+      </div>
+  </body>
+</html>

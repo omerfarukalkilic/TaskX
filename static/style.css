@@ -1,0 +1,203 @@
+/* Genel stiller */
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(120deg, #a0c4ff, #3a7bd5);
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Sidebar stilleri */
+.sidebar {
+    width: 250px;
+    background: linear-gradient(120deg, #343a40, #495057); /* Sidebar için gradient arka plan */
+    padding-top: 20px;
+    padding-left: 15px;
+    padding-right: 15px;
+    color: white;
+    min-height: 100vh;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    border-radius: 0 10px 10px 0;
+    transition: transform 0.3s ease;
+}
+
+.sidebar:hover {
+    transform: scale(1.01);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar .sidebar-header {
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #495057;
+    margin-bottom: 20px;
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    padding: 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.sidebar a:hover {
+    background-color: #6c757d;
+    transform: translateX(5px);
+}
+
+/* Task Section stilleri */
+.task-section {
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #ffffff;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+}
+
+.task-section:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Başlık ve bölümler */
+h3 {
+    border-bottom: 2px solid #ced4da;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-size: 1.7rem;
+    color: #495057;
+    font-weight: 700;
+}
+
+.open-tasks {
+    background-color: #cce5ff;
+    border-left: 5px solid #007bff;
+}
+
+.ongoing-tasks {
+    background-color: #b8daff;
+    border-left: 5px solid #0056b3;
+}
+
+.pending-tasks {
+    background-color: #d6e9ff;
+    border-left: 5px solid #339af0;
+}
+
+.completed-tasks {
+    background-color: #cce5ff;
+    border-left: 5px solid #007bff;
+}
+
+/* Profil kısmı */
+.profile {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.profile img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.profile .username {
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.profile .dropdown-menu {
+    right: 0;
+    left: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Butonlar */
+.task-actions a {
+    margin-bottom: 5px;
+    white-space: nowrap;
+    padding: 0.35rem 1rem;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    border-radius: 5px;
+}
+
+.task-actions a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0069d9;
+    border-color: #005cbf;
+}
+
+/* Görevler arasında geçiş animasyonu */
+.move-task {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.task-moved {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.card:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+/* Eklenen yeni stil */
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 20px;
+    background-color: #fff;
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+.login-container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-logo {
+    position: absolute;
+    top: -50px; /* Logoyu yukarı yerleştirmek için */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px; /* Logonun boyutunu ayarlayabilirsiniz */
+    height: auto;
+}
